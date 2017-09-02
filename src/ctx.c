@@ -1,4 +1,5 @@
 #include "../include/ctx.h"
+#include "../include/audio.h"
 #include "../include/video.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -8,6 +9,7 @@
 
 static SDL_Window *window;
 static SDL_GLContext gl;
+static audio_t *audio;
 static video_t *video;
 static bool running;
 static vec2_t mouse_pos;
@@ -61,7 +63,7 @@ static void ctx_loop(void *arg) {
 
 int ctx_main(int argc, char **argv, sketch_t *sketch) {
     core_init();
-    if (SDL_Init(SDL_INIT_VIDEO)) {
+    if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO)) {
         return EXIT_FAILURE;
     }
     if (!IMG_Init(IMG_INIT_PNG)) {
@@ -98,6 +100,9 @@ int ctx_main(int argc, char **argv, sketch_t *sketch) {
     }
 #endif
     sketch->shutdown();
+    if (audio) {
+        audio_delete(audio);
+    }
     video_delete(video);
     SDL_GL_DeleteContext(gl);
     SDL_DestroyWindow(window);
@@ -110,6 +115,13 @@ vec2_t ctx_viewport() {
     int w, h;
     SDL_GL_GetDrawableSize(window, &w, &h);
     return vec2_new(w, h);
+}
+
+audio_t *ctx_audio() {
+    if (!audio) {
+        audio = audio_new();
+    }
+    return audio;
 }
 
 void ctx_hook_mouse(void (*hook)(vec2_t)) {

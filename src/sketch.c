@@ -1,6 +1,8 @@
 #include "../include/ctx.h"
+#include "../include/audio.h"
 #include "../include/video.h"
 
+static audio_t *audio;
 static unsigned long long money = 0;
 static char buffer[1024];
 static font_t *font_proggy_clean;
@@ -10,6 +12,7 @@ static int news_timer;
 static int cam_timer;
 static int cam_index;
 static sprite_t *sprite_cam[3];
+static sound_t *sound_cash;
 
 typedef struct {
     char *name;
@@ -97,6 +100,7 @@ static void on_mouse_click(vec2_t pos) {
         if (vec4_point_inside(rect, pos)) {
             if (upgrades[i].cost <= money) {
                 upgrades[i].count++;
+                audio_sound_play(audio, sound_cash);
                 money -= upgrades[i].cost;
             }
             return;
@@ -117,6 +121,8 @@ static void sketch_init() {
     upgrades[4].sprite = sprite_load("asset/sprite/icon_home_automation.png");
     news_message = messages[rand() % ARRAY_LENGTH(messages)];
     ctx_hook_mouse(on_mouse_click);
+    audio = ctx_audio();
+    sound_cash = audio_load_sound(audio, "asset/sound/cash.wav");
 }
 
 static void sketch_tick() {
@@ -170,6 +176,7 @@ static void sketch_draw(video_t *video) {
 }
 
 static void sketch_shutdown() {
+    audio_sound_delete(sound_cash);
     font_delete(font_proggy_clean);
 }
 

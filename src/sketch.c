@@ -119,6 +119,8 @@ static void sketch_init() {
     upgrades[2].sprite = sprite_load("asset/sprite/icon_gamestop.png");
     upgrades[3].sprite = sprite_load("asset/sprite/icon_fritzbox.png");
     upgrades[4].sprite = sprite_load("asset/sprite/icon_home_automation.png");
+    upgrades[5].sprite = sprite_load("asset/sprite/icon_copy_paste.png");
+    upgrades[6].sprite = sprite_load("asset/sprite/icon_usb_d.png");
     news_message = messages[rand() % ARRAY_LENGTH(messages)];
     ctx_hook_mouse(on_mouse_click);
     audio = ctx_audio();

@@ -34,7 +34,7 @@ audio_t *audio_new() {
     audio_t *self = malloc_ext(sizeof(*self));
     self->desired = (SDL_AudioSpec) {
             .freq = 44100,
-            .format = AUDIO_S16,
+            .format = AUDIO_F32,
             .channels = 2,
             .samples = 4096,
             .callback = audio_callback,
@@ -53,13 +53,13 @@ audio_t *audio_new() {
 
 sound_t *audio_load_sound(audio_t *self, const char *filename) {
     sound_t *sound = malloc_ext(sizeof(*sound));
-    SDL_AudioSpec *loaded = SDL_LoadWAV(filename, &self->obtained, &sound->buffer, &sound->buffer_size);
-    if (!loaded) {
+    SDL_AudioSpec loaded;
+    if (!SDL_LoadWAV(filename, &loaded, &sound->buffer, &sound->buffer_size)) {
         free(sound);
         return NULL;
     }
     SDL_AudioCVT cvt;
-    SDL_BuildAudioCVT(&cvt, loaded->format, loaded->channels, loaded->freq, self->obtained.format, self->obtained.channels, self->obtained.freq);
+    SDL_BuildAudioCVT(&cvt, loaded.format, loaded.channels, loaded.freq, self->obtained.format, self->obtained.channels, self->obtained.freq);
     cvt.len = sound->buffer_size;
     cvt.buf = malloc_ext((size_t) (cvt.len * cvt.len_mult));
     memcpy(cvt.buf, sound->buffer, sound->buffer_size);

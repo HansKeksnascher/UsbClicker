@@ -1,5 +1,5 @@
 #include "../include/core.h"
-#include <stdint.h>
+#include <stddef.h>
 #include <time.h>
 
 static uint64_t random_state[2];
@@ -118,6 +118,26 @@ void list_delete(list_t *self) {
     free(self);
 }
 
+static bool array_iterator_has_next(iterator_t *iterator) {
+    array_t *self = iterator->ptr_base;
+    ptrdiff_t index = iterator->ptr_next - self->data;
+    return index < self->size;
+}
+
+static void *array_iterator_next(iterator_t *iterator) {
+    array_t *self = iterator->ptr_base;
+    ptrdiff_t index = iterator->ptr_next - self->data;
+    iterator->ptr_prev = iterator->ptr_next;
+    iterator->ptr_next++;
+    return array_get(self, (int) index);
+}
+
+static void array_iterator_remove(iterator_t *iterator) {
+    array_t *self = iterator->ptr_base;
+    ptrdiff_t index = iterator->ptr_prev - self->data;
+    array_remove(self, (int) index);
+}
+
 array_t *array_new(size_t padding) {
     array_t *self = malloc_ext(sizeof(*self));
     self->padding = padding;
@@ -189,6 +209,17 @@ bool array_remove_first(array_t *self) {
 
 bool array_remove_last(array_t *self) {
     return array_remove(self, (int) (self->size - 1));
+}
+
+iterator_t array_iterator(array_t *self) {
+    return (iterator_t) {
+            .has_next = array_iterator_has_next,
+            .next = array_iterator_next,
+            .remove = array_iterator_remove,
+            .ptr_base = self,
+            .ptr_next = self->data,
+            .ptr_prev = NULL
+    };
 }
 
 void array_delete(array_t *self) {

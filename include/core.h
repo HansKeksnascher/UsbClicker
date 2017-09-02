@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,6 +16,10 @@ void core_init();
 void *malloc_ext(size_t size);
 void *realloc_ext(void *memory, size_t size);
 size_t file_read(const char *filename, char *buffer, size_t size);
+
+#define iterator_has_next(iterator) ((iterator).has_next(&(iterator)))
+#define iterator_next(iterator) ((iterator).next(&(iterator)))
+#define iterator_remove(iterator) ((iterator).remove(&(iterator)))
 
 typedef struct iterator_t {
     bool (*has_next)(struct iterator_t*);
@@ -42,6 +47,7 @@ void *array_get_last(array_t *self);
 bool array_remove(array_t *self, int index);
 bool array_remove_first(array_t *self);
 bool array_remove_last(array_t *self);
+iterator_t array_iterator(array_t *self);
 void array_delete(array_t *self);
 
 typedef struct list_node_t {

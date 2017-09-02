@@ -19,7 +19,7 @@ struct audio_t {
 #ifdef __EMSCRIPTEN__
 static int audio_apple_fix(void *userdata, SDL_Event *event) {
     int audio_started;
-    switch(event->type){
+    switch(event->type) {
         case SDL_FINGERDOWN:
         case SDL_MOUSEBUTTONDOWN:
         case SDL_KEYDOWN:
@@ -30,7 +30,7 @@ static int audio_apple_fix(void *userdata, SDL_Event *event) {
                     source.buffer = buffer;
                     source.connect(SDL2.audioContext.destination);
                     source.start();
-                } else if(SDL2.audioContext && SDL2.audioContext.currentTime != 0) {
+                } else if (SDL2.audioContext && SDL2.audioContext.currentTime != 0) {
                     return 1;
                 }
                 return 0;
@@ -39,6 +39,8 @@ static int audio_apple_fix(void *userdata, SDL_Event *event) {
                 SDL_SetEventFilter(NULL, NULL);
                 return 0;
             }
+            break;
+        default:
             break;
     }
     return 1;

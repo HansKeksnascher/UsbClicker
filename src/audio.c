@@ -1,5 +1,8 @@
 #include "../include/audio.h"
 #include <SDL2/SDL.h>
+#ifdef __EMSCRIPTEN__
+#include <emscripten/emscripten.h>
+#endif
 
 typedef struct audio_handle_t {
     sound_t *sound;
@@ -12,6 +15,35 @@ struct audio_t {
     SDL_AudioSpec obtained;
     SDL_AudioDeviceID device;
 };
+
+#ifdef __EMSCRIPTEN__
+static int audio_apple_fix(void *userdata, SDL_Event *event) {
+    int audio_started;
+    switch(event->type){
+        case SDL_FINGERDOWN:
+        case SDL_MOUSEBUTTONDOWN:
+        case SDL_KEYDOWN:
+            audio_started = EM_ASM_INT_V({
+                if (SDL2.audioContext && SDL2.audioContext.currentTime == 0) {
+                    var buffer = SDL2.audioContext.createBuffer(2, 4096, 44100);
+                    var source = SDL2.audioContext.createBufferSource();
+                    source.buffer = buffer;
+                    source.connect(SDL2.audioContext.destination);
+                    source.start();
+                } else if(SDL2.audioContext && SDL2.audioContext.currentTime != 0) {
+                    return 1;
+                }
+                return 0;
+            });
+            if (audio_started) {
+                SDL_SetEventFilter(NULL, NULL);
+                return 0;
+            }
+            break;
+    }
+    return 1;
+}
+#endif
 
 static void audio_callback(void *userdata, uint8_t *stream, int32_t len) {
     audio_t *self = userdata;
@@ -31,12 +63,15 @@ static void audio_callback(void *userdata, uint8_t *stream, int32_t len) {
 }
 
 audio_t *audio_new() {
+#ifdef __EMSCRIPTEN__
+    SDL_SetEventFilter(audio_apple_fix, NULL);
+#endif
     audio_t *self = malloc_ext(sizeof(*self));
     self->desired = (SDL_AudioSpec) {
             .freq = 44100,
             .format = AUDIO_F32,
             .channels = 2,
-            .samples = 1024,
+            .samples = 4096,
             .callback = audio_callback,
             .userdata = self
     };

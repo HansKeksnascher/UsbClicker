@@ -23,6 +23,17 @@ static void ctx_loop(void *arg) {
         switch (event.type) {
             case SDL_FINGERDOWN:
             case SDL_FINGERUP:
+#ifdef __EMSCRIPTEN__
+                EM_ASM({
+                    if (SDL2.audioContext && SDL2.audioContext.currentTime == 0) {
+                        var buffer = SDL2.audioContext.createBuffer(2, 1024, 44100);
+                        var source = SDL2.audioContext.createBufferSource();
+                        source.buffer = buffer;
+                        source.connect(SDL2.audioContext.destination);
+                        source.noteOn(0);
+                    }
+                });
+#endif
                 mouse_pos.x = viewport.x * event.tfinger.x;
                 mouse_pos.y = viewport.y * event.tfinger.y;
                 if (event.tfinger.type == SDL_FINGERDOWN && mouse_hook) {

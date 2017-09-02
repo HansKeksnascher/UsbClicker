@@ -36,7 +36,7 @@ audio_t *audio_new() {
             .freq = 44100,
             .format = AUDIO_F32,
             .channels = 2,
-            .samples = 4096,
+            .samples = 1024,
             .callback = audio_callback,
             .userdata = self
     };

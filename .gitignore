@@ -50,3 +50,14 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# CLion and CMake
+.idea/
+cmake-build-debug/
+cmake-build-release/
+
+# Emscripten
+arcade.data
+arcade.html
+arcade.html.mem
+arcade.js

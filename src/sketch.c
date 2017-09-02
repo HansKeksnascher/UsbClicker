@@ -64,6 +64,12 @@ static upgrade_t upgrades[] = {
                 .cost = 10000000,
                 .income = 1000000,
                 .count = 0
+        },
+        {
+                .name = "Smart Light USB-D",
+                .cost = 100000000,
+                .income = 10000000,
+                .count = 0
         }
 };
 
@@ -121,6 +127,7 @@ static void sketch_init() {
     upgrades[4].sprite = sprite_load("asset/sprite/icon_home_automation.png");
     upgrades[5].sprite = sprite_load("asset/sprite/icon_copy_paste.png");
     upgrades[6].sprite = sprite_load("asset/sprite/icon_usb_d.png");
+    upgrades[7].sprite = sprite_load("asset/sprite/icon_open_licht.png");
     news_message = messages[rand() % ARRAY_LENGTH(messages)];
     ctx_hook_mouse(on_mouse_click);
     audio = ctx_audio();

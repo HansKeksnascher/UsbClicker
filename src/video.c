@@ -22,7 +22,7 @@ static GLuint video_shader_load(GLenum type, const char *filename) {
     return shader;
 }
 
-static void video_env_init(video_clazz clazz, video_env_t *env) {
+static void video_env_init(video_t *self, video_clazz clazz, video_env_t *env) {
     env->clazz = clazz;
     env->program = glCreateProgram();
     switch (env->clazz) {
@@ -33,6 +33,10 @@ static void video_env_init(video_clazz clazz, video_env_t *env) {
         case VIDEO_TEXTURED:
             glAttachShader(env->program, video_shader_load(GL_FRAGMENT_SHADER, "asset/shader/textured.frag"));
             glAttachShader(env->program, video_shader_load(GL_VERTEX_SHADER, "asset/shader/textured.vert"));
+            break;
+        case VIDEO_PARTICLE:
+            glAttachShader(env->program, video_shader_load(GL_FRAGMENT_SHADER, "asset/shader/particle.frag"));
+            glAttachShader(env->program, video_shader_load(GL_VERTEX_SHADER, "asset/shader/particle.vert"));
             break;
     }
     glLinkProgram(env->program);
@@ -47,10 +51,13 @@ static void video_env_init(video_clazz clazz, video_env_t *env) {
 #endif
     env->attrib_position = (GLuint) glGetAttribLocation(env->program, "position");
     env->attrib_tex_coord = (GLuint) glGetAttribLocation(env->program, "texCoord");
+    env->attrib_instance_offset = (GLuint) glGetAttribLocation(env->program, "instanceOffset");
+    env->attrib_instance_color = (GLuint) glGetAttribLocation(env->program, "instanceColor");
     env->uniform_projection = (GLuint) glGetUniformLocation(env->program, "projection");
     env->uniform_color = (GLuint) glGetUniformLocation(env->program, "color");
     glGenVertexArraysOES(1, &env->vao);
     glBindVertexArrayOES(env->vao);
+    glBindBuffer(GL_ARRAY_BUFFER, self->vbo[0]);
     switch (env->clazz) {
         case VIDEO_PRIMITIVE:
             glEnableVertexAttribArray(env->attrib_position);
@@ -61,6 +68,17 @@ static void video_env_init(video_clazz clazz, video_env_t *env) {
             glEnableVertexAttribArray(env->attrib_tex_coord);
             glVertexAttribPointer(env->attrib_position, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), NULL);
             glVertexAttribPointer(env->attrib_tex_coord, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*) (2 * sizeof(float)));
+            break;
+        case VIDEO_PARTICLE:
+            glEnableVertexAttribArray(env->attrib_position);
+            glVertexAttribPointer(env->attrib_position, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), NULL);
+            glBindBuffer(GL_ARRAY_BUFFER, self->vbo[1]);
+            glEnableVertexAttribArray(env->attrib_instance_offset);
+            glVertexAttribPointer(env->attrib_instance_offset, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), NULL);
+            glVertexAttribDivisorANGLE(env->attrib_instance_offset, 1);
+            glEnableVertexAttribArray(env->attrib_instance_color);
+            glVertexAttribPointer(env->attrib_instance_color, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*) (2 * sizeof(float)));
+            glVertexAttribDivisorANGLE(env->attrib_instance_color, 1);
             break;
     }
 }
@@ -113,23 +131,29 @@ void video_data_put4(video_t *self, float p0, float p1, float p2, float p3) {
     self->buffer_size += 4;
 }
 
-void video_data_send(video_t *self) {
+void video_data_send(video_t *self, int vbo_index) {
+    glBindBuffer(GL_ARRAY_BUFFER, self->vbo[vbo_index]);
     glBufferSubData(GL_ARRAY_BUFFER, 0, self->buffer_size * sizeof(float), self->buffer);
 }
 
-void video_mark_dirty(video_t *self) {
+static void video_mark_dirty(video_t *self) {
     self->env_primitive.dirty = true;
     self->env_textured.dirty = true;
+    self->env_particles.dirty = true;
 }
 
 video_t *video_new() {
     video_t *self = malloc_ext(sizeof(*self));
     self->buffer = malloc_ext(VIDEO_BUFFER_SIZE * sizeof(float));
-    glGenBuffers(1, &self->vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, self->vbo);
-    glBufferData(GL_ARRAY_BUFFER, VIDEO_BUFFER_SIZE * sizeof(float), NULL, GL_STREAM_DRAW);
-    video_env_init(VIDEO_PRIMITIVE, &self->env_primitive);
-    video_env_init(VIDEO_TEXTURED, &self->env_textured);
+    glGenBuffers(ARRAY_LENGTH(self->vbo), self->vbo);
+    for (int i = 0; i < ARRAY_LENGTH(self->vbo); i++) {
+        glBindBuffer(GL_ARRAY_BUFFER, self->vbo[i]);
+        glBufferData(GL_ARRAY_BUFFER, VIDEO_BUFFER_SIZE * sizeof(float), NULL, GL_STREAM_DRAW);
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, self->vbo[0]);
+    video_env_init(self, VIDEO_PRIMITIVE, &self->env_primitive);
+    video_env_init(self, VIDEO_TEXTURED, &self->env_textured);
+    video_env_init(self, VIDEO_PARTICLE, &self->env_particles);
     self->env = NULL;
     vec2_t viewport = ctx_viewport();
     self->configs = array_new(sizeof(video_cfg_t));
@@ -169,7 +193,7 @@ void video_rectangle(video_t *self, float x, float y, float w, float h) {
     video_data_put2(self, x + w, y);
     video_data_put2(self, x + w, y + h);
     video_data_put2(self, x, y + h);
-    video_data_send(self);
+    video_data_send(self, 0);
     glDrawArrays(mode, 0, 4);
 }
 
@@ -179,7 +203,7 @@ void video_triangle(video_t *self, float x0, float y0, float x1, float y1, float
     video_data_put2(self, x0, y0);
     video_data_put2(self, x1, y1);
     video_data_put2(self, x2, y2);
-    video_data_send(self);
+    video_data_send(self, 0);
     glDrawArrays(mode, 0, 3);
 }
 
@@ -187,7 +211,8 @@ void video_delete(video_t *self) {
     array_delete(self->configs);
     video_env_shutdown(&self->env_primitive);
     video_env_shutdown(&self->env_textured);
-    glDeleteBuffers(1, &self->vbo);
+    video_env_shutdown(&self->env_particles);
+    glDeleteBuffers(ARRAY_LENGTH(self->vbo), self->vbo);
     free(self->buffer);
     free(self);
 }

@@ -238,14 +238,14 @@ bool is_pot(int value) {
 }
 
 double random_double(double min, double max) {
-    return random_u64() / (UINT64_MAX / (max - min)) + min;
+    return random_bits() / (UINT64_MAX / (max - min)) + min;
 }
 
 float random_float(float min, float max) {
-    return random_u64() / (UINT64_MAX / (max - min)) + min;
+    return random_bits() / (UINT64_MAX / (max - min)) + min;
 }
 
-unsigned long long random_u64() {
+unsigned long long random_bits() {
     uint64_t s0 = random_state[0];
     uint64_t s1 = random_state[1];
     uint64_t result = s0 + s1;
@@ -288,6 +288,13 @@ mat4_t mat4_transpose(mat4_t m) {
 
 vec2_t vec2_new(float x, float y) {
     return (vec2_t) {x, y};
+}
+
+vec2_t vec2_add(vec2_t a, vec2_t b) {
+    return (vec2_t) {
+            .x = a.x + b.x,
+            .y = a.y + b.y
+    };
 }
 
 vec4_t vec4_new(float x, float y, float z, float w) {

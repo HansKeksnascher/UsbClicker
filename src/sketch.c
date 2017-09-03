@@ -1,5 +1,6 @@
 #include "../include/ctx.h"
 #include "../include/audio.h"
+#include "../include/particle.h"
 #include "../include/video.h"
 
 static audio_t *audio;
@@ -13,6 +14,8 @@ static int cam_timer;
 static int cam_index;
 static sprite_t *sprite_cam[3];
 static sound_t *sound_cash;
+
+static emitter_t *emitter;
 
 typedef struct {
     char *name;
@@ -101,6 +104,14 @@ static char *messages[] = {
 static char *news_message = NULL;
 
 static void on_mouse_click(vec2_t pos) {
+    for (int i = 0; i < 20; i++) {
+        float off_x = random_float(-10.0f, 10.0f);
+        float off_y = random_float(-10.0f, 10.0f);
+        particle_t *particle = emitter_emit(emitter, pos.x + off_x, pos.y + off_y);
+        particle->color = COLOR_RGB_RANDOM;
+        particle->velocity.x = random_float(-1.0f, 1.0f);
+        particle->velocity.y = random_float(0.5f, 5.0f);
+    }
     for (int i = 0; i < ARRAY_LENGTH(upgrades); i++) {
         vec4_t rect = vec4_new(714, 40 + i * 72, 200, 32);
         if (vec4_point_inside(rect, pos)) {
@@ -132,6 +143,7 @@ static void sketch_init() {
     ctx_hook_mouse(on_mouse_click);
     audio = ctx_audio();
     sound_cash = audio_load_sound(audio, "asset/sound/cash.wav");
+    emitter = emitter_new();
 }
 
 static void sketch_tick() {
@@ -152,6 +164,7 @@ static void sketch_tick() {
         cam_index = (cam_index + 1) % ARRAY_LENGTH(sprite_cam);
         cam_timer = 0;
     }
+    emitter_tick(emitter);
 }
 
 static void sketch_draw(video_t *video) {
@@ -182,9 +195,11 @@ static void sketch_draw(video_t *video) {
         video_text(video, font_proggy_clean, buffer, 10, 730);
     }
     video_cfg_color(video, vec4_new(1, 1, 1, 1));
+    emitter_draw(emitter, video);
 }
 
 static void sketch_shutdown() {
+    emitter_delete(emitter);
     audio_sound_delete(sound_cash);
     font_delete(font_proggy_clean);
 }

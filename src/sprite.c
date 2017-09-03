@@ -124,7 +124,7 @@ void video_sprite_item(video_t *self, vec4_t dst, vec4_t src) {
 }
 
 void video_sprite_end(video_t *self) {
-    video_data_send(self);
+    video_data_send(self, 0);
     glDrawArrays(GL_TRIANGLES, 0, (GLsizei) (6 * self->batch_size));
 }
 

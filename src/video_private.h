@@ -17,7 +17,8 @@
 
 typedef enum {
     VIDEO_PRIMITIVE,
-    VIDEO_TEXTURED
+    VIDEO_TEXTURED,
+    VIDEO_PARTICLE
 } video_clazz;
 
 typedef struct video_cfg_t {
@@ -32,6 +33,8 @@ typedef struct video_env_t {
     GLuint program;
     GLuint attrib_position;
     GLuint attrib_tex_coord;
+    GLuint attrib_instance_offset;
+    GLuint attrib_instance_color;
     GLuint uniform_projection;
     GLuint uniform_color;
     bool dirty;
@@ -40,9 +43,10 @@ typedef struct video_env_t {
 struct video_t {
     float *buffer;
     size_t buffer_size;
-    GLuint vbo;
+    GLuint vbo[2];
     video_env_t env_primitive;
     video_env_t env_textured;
+    video_env_t env_particles;
     video_env_t *env;
     array_t *configs;
     size_t batch_size;
@@ -84,6 +88,6 @@ GLenum video_env_set(video_t *self, video_env_t *env);
 void video_data_clear(video_t *self);
 void video_data_put2(video_t *self, float p0, float p1);
 void video_data_put4(video_t *self, float p0, float p1, float p2, float p3);
-void video_data_send(video_t *self);
+void video_data_send(video_t *self, int vbo_index);
 
 #endif

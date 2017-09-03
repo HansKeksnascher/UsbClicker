@@ -96,15 +96,18 @@ typedef union vec4_t {
 bool is_pot(int value);
 double random_double(double min, double max);
 float random_float(float min, float max);
-unsigned long long random_u64();
+int random_int(int min, int max);
+unsigned long long random_bits();
 
 mat4_t mat4_identity();
 mat4_t mat4_ortho(float left, float right, float bottom, float top, float near, float far);
 mat4_t mat4_transpose(mat4_t m);
 
 vec2_t vec2_new(float x, float y);
+vec2_t vec2_add(vec2_t a, vec2_t b);
 
 #define COLOR_RGBA(r, g, b, a) vec4_new((r) / 255.0f, (g) / 255.0f, (b) / 255.0f, (a) / 255.0f)
+#define COLOR_RGB_RANDOM (vec4_new(random_float(0.0f, 1.0f), random_float(0.0f, 1.0f), random_float(0.0f, 1.0f), 1.0f))
 vec4_t vec4_new(float x, float y, float z, float w);
 bool vec4_point_inside(vec4_t vec, vec2_t pos);
 

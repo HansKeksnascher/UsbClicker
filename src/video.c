@@ -10,12 +10,14 @@ static GLuint video_shader_load(GLenum type, const char *filename) {
     GLuint shader = glCreateShader(type);
     glShaderSource(shader, 1, (const char**) &buffer, NULL);
     glCompileShader(shader);
+#ifdef DEBUG
     GLint status;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
     if (!status) {
         glGetShaderInfoLog(shader, 1024 * sizeof(char), NULL, buffer);
         printf("%s: %s\n", filename, buffer);
     }
+#endif
     free(buffer);
     return shader;
 }
@@ -34,6 +36,7 @@ static void video_env_init(video_clazz clazz, video_env_t *env) {
             break;
     }
     glLinkProgram(env->program);
+#ifdef DEBUG
     GLint status;
     glGetProgramiv(env->program, GL_LINK_STATUS, &status);
     if (!status) {
@@ -41,6 +44,7 @@ static void video_env_init(video_clazz clazz, video_env_t *env) {
         glGetProgramInfoLog(env->program, sizeof(buffer), NULL, buffer);
         printf("%s\n", buffer);
     }
+#endif
     env->attrib_position = (GLuint) glGetAttribLocation(env->program, "position");
     env->attrib_tex_coord = (GLuint) glGetAttribLocation(env->program, "texCoord");
     env->uniform_projection = (GLuint) glGetUniformLocation(env->program, "projection");

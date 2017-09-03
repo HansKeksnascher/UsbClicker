@@ -45,7 +45,7 @@ sprite_t *sprite_load_dds(const char *filename) {
     }
     dds_header_t header;
     fread(&header, sizeof(dds_header_t), 1, file);
-#ifdef __EMSCRIPTEN__
+#if defined(__EMSCRIPTEN__) && defined(DEBUG)
     if (!is_pot(header.w) || !is_pot(header.h)) {
         printf("sprite_load_dds: %s is a Non-Power-Of-Two texture, it will most likely don't work\n", filename);
     }

@@ -79,7 +79,9 @@ audio_t *audio_new() {
     };
     self->device = SDL_OpenAudioDevice(NULL, 0, &self->desired, &self->obtained, SDL_AUDIO_ALLOW_ANY_CHANGE);
     if (!self->device) {
+#ifdef DEBUG
         printf("audio_new: failed to open audio device\n");
+#endif
         free(self);
         return NULL;
     }

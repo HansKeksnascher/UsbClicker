@@ -13,7 +13,9 @@ void core_init() {
 void *malloc_ext(size_t size) {
     void *ptr = malloc(size);
     if (!ptr) {
+#ifdef DEBUG
         printf("malloc: can't allocate %llu bytes\n", (unsigned long long) size);
+#endif
         exit(EXIT_FAILURE);
     }
     return ptr;
@@ -22,7 +24,9 @@ void *malloc_ext(size_t size) {
 void *realloc_ext(void *memory, size_t size) {
     void *ptr = realloc(memory, size);
     if (!ptr) {
+#ifdef DEBUG
         printf("realloc: can't reallocate %p to %llu bytes\n", memory, (unsigned long long) size);
+#endif
         exit(EXIT_FAILURE);
     }
     return ptr;
@@ -31,7 +35,9 @@ void *realloc_ext(void *memory, size_t size) {
 size_t file_read(const char *filename, char *buffer, size_t size) {
     FILE *file = fopen(filename, "r");
     if (!file) {
+#ifdef DEBUG
         printf("file_read: missing file %s\n", filename);
+#endif
         return 0;
     }
     size_t count = fread(buffer, sizeof(char), size, file);

@@ -9,6 +9,6 @@ include_directories(${EPOXY_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCL
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
-set(SOURCE_FILES src/ctx.c include/ctx.h src/core.c include/core.h src/video.c include/video.h src/sketch.c src/audio.c include/audio.h src/video_private.h src/sprite.c src/font.c src/particle.c include/particle.h)
+set(SOURCE_FILES src/ctx.c include/ctx.h src/core.c include/core.h src/video.c include/video.h src/sketch.c src/audio.c include/audio.h src/video_private.h src/sprite.c src/font.c src/particle.c)
 add_executable(arcade ${SOURCE_FILES})
 target_link_libraries(arcade ${EPOXY_LIBRARIES} ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})

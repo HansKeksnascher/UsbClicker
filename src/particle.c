@@ -1,15 +1,7 @@
-#include "../include/particle.h"
 #include "video_private.h"
-
-struct emitter_t {
-    GLuint vbo;
-    array_t *particles;
-};
 
 emitter_t *emitter_new() {
     emitter_t *self = malloc_ext(sizeof(*self));
-    glGenBuffers(1, &self->vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, self->vbo);
     self->particles = array_new(sizeof(particle_t));
     return self;
 }

@@ -13,7 +13,7 @@
 #include <epoxy/gl.h>
 #endif
 
-#define VIDEO_BUFFER_SIZE 8192
+#define VIDEO_BUFFER_SIZE 65536
 
 typedef enum {
     VIDEO_PRIMITIVE,

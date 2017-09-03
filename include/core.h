@@ -96,6 +96,7 @@ typedef union vec4_t {
 bool is_pot(int value);
 double random_double(double min, double max);
 float random_float(float min, float max);
+float random_gaussian();
 int random_int(int min, int max);
 unsigned long long random_bits();
 

@@ -29,6 +29,17 @@ typedef struct font_t {
     glyph_t glyphs[128];
 } font_t;
 
+typedef struct emitter_t {
+    array_t *particles;
+} emitter_t;
+
+typedef struct particle_t {
+    vec2_t position;
+    vec4_t color;
+    vec2_t velocity;
+    int lifetime;
+} particle_t;
+
 video_t *video_new();
 void video_cfg_color(video_t *self, vec4_t color);
 void video_cfg_mode(video_t *self, video_mode mode);
@@ -50,5 +61,11 @@ void sprite_delete(sprite_t *self);
 font_t *font_load(const char *filename_desc, const char *filename_sprite);
 void video_text(video_t *self, font_t *font, const char *str, float x, float y);
 void font_delete(font_t *self);
+
+emitter_t *emitter_new();
+particle_t *emitter_emit(emitter_t *self, float x, float y);
+void emitter_tick(emitter_t *self);
+void emitter_draw(emitter_t *self, struct video_t *video);
+void emitter_delete(emitter_t *self);
 
 #endif

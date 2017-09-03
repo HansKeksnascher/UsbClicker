@@ -1,6 +1,5 @@
 #include "../include/ctx.h"
 #include "../include/audio.h"
-#include "../include/particle.h"
 #include "../include/video.h"
 
 static audio_t *audio;
@@ -104,13 +103,11 @@ static char *messages[] = {
 static char *news_message = NULL;
 
 static void on_mouse_click(vec2_t pos) {
-    for (int i = 0; i < 20; i++) {
-        float off_x = random_float(-10.0f, 10.0f);
-        float off_y = random_float(-10.0f, 10.0f);
-        particle_t *particle = emitter_emit(emitter, pos.x + off_x, pos.y + off_y);
+    for (int i = 0; i < 65; i++) {
+        particle_t *particle = emitter_emit(emitter, pos.x, pos.y);
         particle->color = COLOR_RGB_RANDOM;
-        particle->velocity.x = random_float(-1.0f, 1.0f);
-        particle->velocity.y = random_float(0.5f, 5.0f);
+        particle->velocity.x = 5.0f * random_gaussian();
+        particle->velocity.y = 5.0f * random_gaussian();
     }
     for (int i = 0; i < ARRAY_LENGTH(upgrades); i++) {
         vec4_t rect = vec4_new(714, 40 + i * 72, 200, 32);

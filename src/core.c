@@ -3,6 +3,8 @@
 #include <time.h>
 
 static uint64_t random_state[2];
+static bool gaussian_ready;
+static float gaussian_next;
 
 void core_init() {
     srand((unsigned int) time(NULL));
@@ -243,6 +245,23 @@ double random_double(double min, double max) {
 
 float random_float(float min, float max) {
     return random_bits() / (UINT64_MAX / (max - min)) + min;
+}
+
+float random_gaussian() {
+    if (gaussian_ready) {
+        gaussian_ready = false;
+        return gaussian_next;
+    }
+    float v1, v2, s;
+    do {
+        v1 = random_float(-1.0f, 1.0f);
+        v2 = random_float(-1.0f, 1.0f);
+        s = v1 * v1 + v2 * v2;
+    } while (s >= 1.0f || s == 0.0f);
+    float multiplier = sqrtf(-2.0f * logf(s) / s);
+    gaussian_next = v2 * multiplier;
+    gaussian_ready = true;
+    return v1 * multiplier;
 }
 
 unsigned long long random_bits() {

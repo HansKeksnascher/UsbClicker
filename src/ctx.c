@@ -70,7 +70,7 @@ int ctx_main(int argc, char **argv, sketch_t *sketch) {
         SDL_Quit();
         return EXIT_FAILURE;
     }
-    window = SDL_CreateWindow("arcade", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 768, SDL_WINDOW_OPENGL);
+    window = SDL_CreateWindow("Daniel Clicker", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 768, SDL_WINDOW_OPENGL);
     if (!window) {
         IMG_Quit();
         SDL_Quit();

@@ -77,7 +77,6 @@ static upgrade_t upgrades[] = {
 
 static char *messages[] = {
         "Kein Ende der Gentwoche in Sicht",
-        "Doktor Schnauf als bester Wirtschaftsinformatiker 2017 ausgezeichnet",
         "Starke Proteste gegen Inder auf YouTube",
         "Susi vermisst",
         "Der mit den Schuhen hat neue Schuhe",
@@ -91,13 +90,18 @@ static char *messages[] = {
         "Gent mit goldenem PoE-Tradeorden ausgezeichnet",
         "Wissenschaftlich bewiesen: Daniel faul",
         "Akte Gent geleakt",
-        "Monster ausverkauft. Ist Doktor Schnauf schuld?",
         "Drei Neue Susi-Spiele dieses Jahr angekuendigt",
         "Neue Modemarke Tutorial by Daniel gestartet",
         "Spuerst du das USB heut Nacht",
         "Glasmeister Alex veroeffentlicht neuen Hit Summertime Recherche",
         "Wissenschaftliche Fachkraft hat keine Ahnung von Wissenschaft",
-        "Gent zum CEO des Jahres nominiert"
+        "Gent zum CEO des Jahres nominiert",
+        "Daniel und Home Automation: Erfolge bleiben aus",
+        "Gent zum Schwaetzer des Jahres gewaehlt",
+        "Keine Termine vor 2077 bei Gent in Sicht",
+        "Daniel entdeckt neue Krankheit ausgeloest durch Vitrinen anstarren",
+        "Daniel als faulster GameStop-Mitarbeiter ausgezeichnet",
+        "Daniel hat eine neue Badewanne"
 };
 
 static char *news_message = NULL;

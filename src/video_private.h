@@ -18,7 +18,8 @@
 typedef enum {
     VIDEO_PRIMITIVE,
     VIDEO_TEXTURED,
-    VIDEO_PARTICLE
+    VIDEO_PARTICLE,
+    VIDEO_PARTICLE_TEXTURED
 } video_clazz;
 
 typedef struct video_cfg_t {
@@ -47,6 +48,7 @@ struct video_t {
     video_env_t env_primitive;
     video_env_t env_textured;
     video_env_t env_particles;
+    video_env_t env_particles_textured;
     video_env_t *env;
     array_t *configs;
     size_t batch_size;

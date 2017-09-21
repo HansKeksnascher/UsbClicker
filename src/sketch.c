@@ -13,6 +13,7 @@ static int cam_timer;
 static int cam_index;
 static sprite_t *sprite_cam[3];
 static sound_t *sound_cash;
+static sprite_t *particle_usb;
 
 static emitter_t *emitter;
 
@@ -107,7 +108,7 @@ static char *messages[] = {
 static char *news_message = NULL;
 
 static void on_mouse_click(vec2_t pos) {
-    for (int i = 0; i < 65; i++) {
+    for (int i = 0; i < 32; i++) {
         particle_t *particle = emitter_emit(emitter, pos.x, pos.y);
         particle->color = COLOR_RGB_RANDOM;
         particle->velocity.x = 5.0f * random_gaussian();
@@ -144,7 +145,8 @@ static void sketch_init() {
     ctx_hook_mouse(on_mouse_click);
     audio = ctx_audio();
     sound_cash = audio_load_sound(audio, "asset/sound/cash.wav");
-    emitter = emitter_new();
+    particle_usb = sprite_load("asset/sprite/particle_usb.png");
+    emitter = emitter_new(particle_usb);
 }
 
 static void sketch_tick() {

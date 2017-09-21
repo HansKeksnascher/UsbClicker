@@ -31,6 +31,7 @@ typedef struct font_t {
 
 typedef struct emitter_t {
     array_t *particles;
+    sprite_t *sprite;
 } emitter_t;
 
 typedef struct particle_t {
@@ -62,7 +63,7 @@ font_t *font_load(const char *filename_desc, const char *filename_sprite);
 void video_text(video_t *self, font_t *font, const char *str, float x, float y);
 void font_delete(font_t *self);
 
-emitter_t *emitter_new();
+emitter_t *emitter_new(sprite_t *sprite);
 particle_t *emitter_emit(emitter_t *self, float x, float y);
 void emitter_tick(emitter_t *self);
 void emitter_draw(emitter_t *self, struct video_t *video);

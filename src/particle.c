@@ -1,8 +1,9 @@
 #include "video_private.h"
 
-emitter_t *emitter_new() {
+emitter_t *emitter_new(sprite_t *sprite) {
     emitter_t *self = malloc_ext(sizeof(*self));
     self->particles = array_new(sizeof(particle_t));
+    self->sprite = sprite;
     return self;
 }
 
@@ -28,12 +29,22 @@ void emitter_tick(emitter_t *self) {
 }
 
 void emitter_draw(emitter_t *self, video_t *video) {
-    video_env_set(video, &video->env_particles);
     video_data_clear(video);
-    video_data_put2(video, 0, 0);
-    video_data_put2(video, 5, 0);
-    video_data_put2(video, 5, 5);
-    video_data_put2(video, 0, 5);
+    if (self->sprite) {
+        video_env_set(video, &video->env_particles_textured);
+        sprite_t *sprite = self->sprite;
+        glBindTexture(GL_TEXTURE_2D, sprite->texture);
+        video_data_put4(video, 0, 0, 0, 0);
+        video_data_put4(video, sprite->w, 0, 1, 0);
+        video_data_put4(video, sprite->w, sprite->h, 1, 1);
+        video_data_put4(video, 0, sprite->h, 0, 1);
+    } else {
+        video_env_set(video, &video->env_particles);
+        video_data_put2(video, 0, 0);
+        video_data_put2(video, 5, 0);
+        video_data_put2(video, 5, 5);
+        video_data_put2(video, 0, 5);
+    }
     video_data_send(video, 0);
     int count = 0;
     video_data_clear(video);
